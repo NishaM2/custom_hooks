@@ -1,32 +1,35 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react';
 import './App.css'
 
 function App() {
+  const [render, setRender] = useState(true);
+
+  useEffect(() => {
+    setInterval(() => {
+      setRender(r => !r);
+    }, 5000)
+  }, []);
+
   return (
     <>
-      <MyComponent/>
+      {render ? <MyComponent/> : <div></div>}
     </>
   )
 }
 
-class MyComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { count: 0 };
-  }
 
-  incrementCount = () => {
-    this.setState({ count: this.state.count + 1 });
-  }
+function MyComponent() {
+  useEffect(() => {
+    console.error("component mounted");
 
-  render() {
-    return (
-      <div>
-        <p>{this.state.count}</p>
-        <button onClick={this.incrementCount}>Increment</button>
-      </div>
-    );
-  }
+    return () => {
+      console.log("component unmounted");
+    };
+  }, []);
+
+  return <div>
+    From inside my component
+  </div>
 }
 
 export default App
