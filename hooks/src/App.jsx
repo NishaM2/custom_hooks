@@ -1,35 +1,29 @@
-import React, { useEffect, useState } from 'react';
-import './App.css'
+import { useEffect, useState } from 'react'
+import axios from 'axios'
 
 function App() {
-  const [render, setRender] = useState(true);
+  const [todos, setTodos] = useState([])
 
   useEffect(() => {
-    setInterval(() => {
-      setRender(r => !r);
-    }, 5000)
-  }, []);
+    axios.get('https://dummyjson.com/todos')
+      .then(res => {
+        setTodos(res.data.todos);
+      })
+  }, [])
 
   return (
     <>
-      {render ? <MyComponent/> : <div></div>}
+      {todos.map(todos => <Track todos={todos} />)}
     </>
   )
 }
 
-
-class MyComponent extends React.Component {
-  componentDidMount() {
-    console.log('component mounted');
-  }
-
-  componentWillUnmount() {
-    console.log('component unmounted');
-  }
-
-  render() {
-    return <div>hi there</div>
-  }
+function Track({ todos }) {
+  return <div>
+    {todos.id}
+    <br />
+    {todos.todo}
+  </div>
 }
 
 export default App
