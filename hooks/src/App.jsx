@@ -1,55 +1,20 @@
-// check auto reloading in inspect
+//swr is a popular React library that creates a lot of these hooks for you,
+//  and you can use it directly.
+import useSWR from 'swr'
 
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+// const fetcher = (url) => fetch(url).then((res) => res.json());
+const fetcher = async function(url) {
+  const data = await fetch(url);
+  const json = await data.json();
+  return json;
+};
 
-function useTodos(n) {
-  const [todos, setTodos] = useState([])
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const value = setInterval(() => {
-      axios.get('https://dummyjson.com/todos')
-        .then(res => {
-          setTodos(res.data.todos);
-          setLoading(false);
-        })
-    }, n * 1000)
-
-    axios.get('https://dummyjson.com/todos')
-      .then(res => {
-        setTodos(res.data.todos);
-        setLoading(false);
-      })
-
-    return () => {
-      clearInterval(value);
-    }
-  }, [n])
-
-  return {todos, loading};
+function Profile() {
+  const { data, error, isLoading } = useSWR('https://dummyjson.com/todos', fetcher)
+ 
+  if (error) return <div>failed to load</div>
+  if (isLoading) return <div>loading...</div>
+  return <div>hello, you have {data.todos.length} todos!</div>
 }
 
-function App() { 
-  const {todos, loading} = useTodos(3);
-
-  if(loading) {
-    return <div>Loading...</div>
-  }
-  
-  return (
-    <>
-      {todos.map(todos => <Track todos={todos} />)}
-    </>
-  )
-}
-
-function Track({ todos }) {
-  return <div>
-    {todos.id}
-    <br />
-    {todos.todo}
-  </div>
-}
-
-export default App
+export default Profile
